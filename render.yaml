@@ -1,0 +1,24 @@
+# Render Blueprint for the backend. Frontend: deploy /frontend to Vercel or Netlify.
+services:
+  - type: web
+    name: ai-chatbot-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    plan: starter            # persistent disks require a paid instance type
+    disk:
+      name: chat-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: LLM_API_KEYS
+        sync: false          # you enter this in the dashboard; never commit it
+      - key: LLM_MODEL
+        value: gemini/gemini-2.0-flash
+      - key: DATABASE_URL
+        value: sqlite:////data/app.db
+      - key: ALLOWED_ORIGINS
+        sync: false          # your deployed frontend origin, e.g. https://my-chat.vercel.app
+      - key: ENABLE_FAILURE_SIMULATION
+        value: "false"
